@@ -1,4 +1,4 @@
-package com.example.example
+package com.example.chialisp_playground
 
 import io.flutter.embedding.android.FlutterActivity
 
