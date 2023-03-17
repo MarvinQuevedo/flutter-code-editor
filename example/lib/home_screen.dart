@@ -45,40 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Code Editor by Akvelon'),
         actions: [
-          //
-          IconButton(
-            color: _showNumbers ? toggleButtonActiveColor : toggleButtonColor,
-            onPressed: () => setState(() {
-              _showNumbers = !_showNumbers;
-            }),
-            icon: const Icon(Icons.numbers),
-          ),
-
-          IconButton(
-            color: _showErrors ? toggleButtonActiveColor : toggleButtonColor,
-            onPressed: () => setState(() {
-              _showErrors = !_showErrors;
-            }),
-            icon: const Icon(Icons.cancel),
-          ),
-
-          IconButton(
-            color: _showFoldingHandles
-                ? toggleButtonActiveColor
-                : toggleButtonColor,
-            onPressed: () => setState(() {
-              _showFoldingHandles = !_showFoldingHandles;
-            }),
-            icon: const Icon(Icons.chevron_right),
-          ),
-
-          const SizedBox(width: 20),
-          DropdownSelector(
-            onChanged: _setLanguage,
-            icon: Icons.code,
-            value: _language,
-            values: languageList,
-          ),
+         
+         
 
           const SizedBox(width: 20),
           DropdownSelector<AbstractAnalyzer>(
