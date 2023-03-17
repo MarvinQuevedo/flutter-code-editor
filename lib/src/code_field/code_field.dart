@@ -186,7 +186,7 @@ class _CodeFieldState extends State<CodeField> {
   final _flippedPopupOffset = ValueNotifier(Offset.zero);
   double painterWidth = 0;
   double painterHeight = 0;
- 
+
   FocusNode? _focusNode;
   String? lines;
   String longestLine = '';
@@ -229,12 +229,11 @@ class _CodeFieldState extends State<CodeField> {
     widget.controller.removeListener(_updatePopupOffset);
     _numberScroll?.dispose();
     _codeScroll?.dispose();
-    _horizontalCodeScroll?.dispose(); 
+    _horizontalCodeScroll?.dispose();
     super.dispose();
   }
 
   void rebuild() {
-    
     WidgetsBinding.instance.addPostFrameCallback(calculateWindowSize);
   }
 
@@ -408,18 +407,19 @@ class _CodeFieldState extends State<CodeField> {
                   editingField,
                   if (widget.controller.popupController.isPopupShown)
                     ValueListenableBuilder(
-                        valueListenable: _flippedPopupOffset,
-                        builder: (context, value, _) {
-                          return Popup(
-                            normalOffset: _normalPopupOffset.value,
-                            flippedOffset: _flippedPopupOffset.value,
-                            controller: widget.controller.popupController,
-                            editingWindowSize: windowSize,
-                            style: textStyle,
-                            backgroundColor: backgroundCol,
-                            parentFocusNode: _focusNode!,
-                          );
-                        })
+                      valueListenable: _flippedPopupOffset,
+                      builder: (context, value, _) {
+                        return Popup(
+                          normalOffset: _normalPopupOffset.value,
+                          flippedOffset: _flippedPopupOffset.value,
+                          controller: widget.controller.popupController,
+                          editingWindowSize: windowSize,
+                          style: textStyle,
+                          backgroundColor: backgroundCol,
+                          parentFocusNode: _focusNode!,
+                        );
+                      },
+                    )
                 ],
               ),
             ),
