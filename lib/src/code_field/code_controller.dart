@@ -337,6 +337,7 @@ class CodeController extends TextEditingController {
     final hasSelectionChanged = newValue.selection != super.value.selection;
 
     if (!hasTextChanged && !hasSelectionChanged) {
+       super.value = newValue;
       return;
     }
 
@@ -364,6 +365,7 @@ class CodeController extends TextEditingController {
       final editResult = _getEditResultNotBreakingReadOnly(newValue);
 
       if (editResult == null) {
+         super.value = newValue;
         return;
       }
 
