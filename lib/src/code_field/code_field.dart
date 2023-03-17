@@ -180,6 +180,7 @@ class _CodeFieldState extends State<CodeField> {
   ScrollController? _codeScroll;
   ScrollController? _horizontalCodeScroll;
   final _codeFieldKey = GlobalKey();
+  final _codeInputFieldKey = GlobalKey();
 
   Offset _normalPopupOffset = Offset.zero;
   Offset _flippedPopupOffset = Offset.zero;
@@ -235,16 +236,17 @@ class _CodeFieldState extends State<CodeField> {
 
   void rebuild() {
     setState(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        // For some reason _codeFieldKey.currentContext is null in tests
-        // so check first.
-        final context = _codeFieldKey.currentContext;
-        if (context != null) {
-          final double width = context.size!.width;
-          final double height = context.size!.height;
-          windowSize = Size(width, height);
-        }
-      });
+      
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // For some reason _codeFieldKey.currentContext is null in tests
+      // so check first.
+      final context = _codeFieldKey.currentContext;
+      if (context != null) {
+        final double width = context.size!.width;
+        final double height = context.size!.height;
+        windowSize = Size(width, height);
+      }
     });
   }
 
@@ -259,9 +261,9 @@ class _CodeFieldState extends State<CodeField> {
 
     // Find longest line
     longestLine = '';
-    widget.controller.text.split('\n').forEach((line) {
+    for (final line in str) {
       if (line.length > longestLine.length) longestLine = line;
-    });
+    }
 
     rebuild();
   }
@@ -356,6 +358,7 @@ class _CodeFieldState extends State<CodeField> {
 
     final codeField = TextField(
       focusNode: _focusNode,
+      key: _codeInputFieldKey,
       scrollPadding: widget.padding,
       style: textStyle,
       controller: widget.controller,
