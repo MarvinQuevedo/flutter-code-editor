@@ -234,6 +234,7 @@ class _CodeFieldState extends State<CodeField> {
   }
 
   void rebuild() {
+    
     WidgetsBinding.instance.addPostFrameCallback(calculateWindowSize);
   }
 
@@ -370,8 +371,6 @@ class _CodeFieldState extends State<CodeField> {
         focusedBorder: InputBorder.none,
       ),
       cursorColor: widget.cursorColor ?? defaultTextStyle.color,
-      autocorrect: false,
-      enableSuggestions: false,
       enabled: widget.enabled,
       onChanged: widget.onChanged,
       readOnly: widget.readOnly,
@@ -405,10 +404,10 @@ class _CodeFieldState extends State<CodeField> {
               child: Stack(
                 children: [
                   editingField,
-                  if (widget.controller.popupController.isPopupShown)
-                    ValueListenableBuilder(
-                      valueListenable: _flippedPopupOffset,
-                      builder: (context, value, _) {
+                  ValueListenableBuilder(
+                    valueListenable: _flippedPopupOffset,
+                    builder: (context, value, _) {
+                      if (widget.controller.popupController.isPopupShown) {
                         return Popup(
                           normalOffset: _normalPopupOffset.value,
                           flippedOffset: _flippedPopupOffset.value,
@@ -418,8 +417,10 @@ class _CodeFieldState extends State<CodeField> {
                           backgroundColor: backgroundCol,
                           parentFocusNode: _focusNode!,
                         );
-                      },
-                    )
+                      }
+                      return const SizedBox();
+                    },
+                  )
                 ],
               ),
             ),
