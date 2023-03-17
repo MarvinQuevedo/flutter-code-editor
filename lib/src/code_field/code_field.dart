@@ -182,17 +182,17 @@ class _CodeFieldState extends State<CodeField> {
   final _codeFieldKey = GlobalKey();
   final _codeInputFieldKey = GlobalKey();
 
-  Offset _normalPopupOffset = Offset.zero;
-  Offset _flippedPopupOffset = Offset.zero;
+  final _normalPopupOffset = ValueNotifier(Offset.zero);
+  final _flippedPopupOffset = ValueNotifier(Offset.zero);
   double painterWidth = 0;
   double painterHeight = 0;
-
-  StreamSubscription<bool>? _keyboardVisibilitySubscription;
+ 
   FocusNode? _focusNode;
   String? lines;
   String longestLine = '';
   late Size windowSize;
   late TextStyle textStyle;
+  String? lastValue;
 
   @override
   void initState() {
@@ -229,43 +229,40 @@ class _CodeFieldState extends State<CodeField> {
     widget.controller.removeListener(_updatePopupOffset);
     _numberScroll?.dispose();
     _codeScroll?.dispose();
-    _horizontalCodeScroll?.dispose();
-    unawaited(_keyboardVisibilitySubscription?.cancel());
+    _horizontalCodeScroll?.dispose(); 
     super.dispose();
   }
 
   void rebuild() {
-    setState(() {
-      
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // For some reason _codeFieldKey.currentContext is null in tests
-      // so check first.
-      final context = _codeFieldKey.currentContext;
-      if (context != null) {
-        final double width = context.size!.width;
-        final double height = context.size!.height;
-        windowSize = Size(width, height);
-      }
-    });
+    
+    WidgetsBinding.instance.addPostFrameCallback(calculateWindowSize);
+  }
+
+  void calculateWindowSize(_) {
+    // For some reason _codeFieldKey.currentContext is null in tests
+    // so check first.
+    final context = _codeFieldKey.currentContext;
+    if (context != null) {
+      final double width = context.size!.width;
+      final double height = context.size!.height;
+      windowSize = Size(width, height);
+    }
   }
 
   void _onTextChanged() {
     // Rebuild line number
-    final str = widget.controller.text.split('\n');
-    final buf = <String>[];
+    if (lastValue != widget.controller.text) {
+      lastValue = widget.controller.text;
+      final str = widget.controller.text.split('\n');
 
-    for (var k = 0; k < str.length; k++) {
-      buf.add((k + 1).toString());
+      // Find longest line
+      longestLine = '';
+      for (final line in str) {
+        if (line.length > longestLine.length) longestLine = line;
+      }
+
+      rebuild();
     }
-
-    // Find longest line
-    longestLine = '';
-    for (final line in str) {
-      if (line.length > longestLine.length) longestLine = line;
-    }
-
-    rebuild();
   }
 
   // Wrap the codeField in a horizontal scrollView
@@ -410,15 +407,19 @@ class _CodeFieldState extends State<CodeField> {
                 children: [
                   editingField,
                   if (widget.controller.popupController.isPopupShown)
-                    Popup(
-                      normalOffset: _normalPopupOffset,
-                      flippedOffset: _flippedPopupOffset,
-                      controller: widget.controller.popupController,
-                      editingWindowSize: windowSize,
-                      style: textStyle,
-                      backgroundColor: backgroundCol,
-                      parentFocusNode: _focusNode!,
-                    ),
+                    ValueListenableBuilder(
+                        valueListenable: _flippedPopupOffset,
+                        builder: (context, value, _) {
+                          return Popup(
+                            normalOffset: _normalPopupOffset.value,
+                            flippedOffset: _flippedPopupOffset.value,
+                            controller: widget.controller.popupController,
+                            editingWindowSize: windowSize,
+                            style: textStyle,
+                            backgroundColor: backgroundCol,
+                            parentFocusNode: _focusNode!,
+                          );
+                        })
                 ],
               ),
             ),
@@ -437,10 +438,8 @@ class _CodeFieldState extends State<CodeField> {
     final double flippedTopOffset = normalTopOffset -
         (Sizes.autocompletePopupMaxHeight + caretHeight + Sizes.caretPadding);
 
-    setState(() {
-      _normalPopupOffset = Offset(leftOffset, normalTopOffset);
-      _flippedPopupOffset = Offset(leftOffset, flippedTopOffset);
-    });
+    _normalPopupOffset.value = Offset(leftOffset, normalTopOffset);
+    _flippedPopupOffset.value = Offset(leftOffset, flippedTopOffset);
   }
 
   TextPainter _getTextPainter(String text) {
