@@ -14,8 +14,8 @@ class Popup extends StatefulWidget {
   final PopupController controller;
   final FocusNode parentFocusNode;
 
-  Popup({
-    Key? key,
+  const Popup({
+    super.key,
     required this.normalOffset,
     required this.flippedOffset,
     required this.controller,
@@ -23,7 +23,7 @@ class Popup extends StatefulWidget {
     required this.style,
     required this.parentFocusNode,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   PopupState createState() => PopupState();
@@ -71,8 +71,8 @@ class PopupState extends State<Popup> {
           decoration: BoxDecoration(
             color: widget.backgroundColor,
             border: Border.all(
-              color: widget.style.color!,
-              width: 0.5,
+              color: const Color(0xff444444),
+             // width: 1,
             ),
           ),
           child: ScrollablePositionedList.builder(
@@ -108,10 +108,10 @@ class PopupState extends State<Popup> {
         highlightColor: Colors.transparent,
         child: ColoredBox(
           color: widget.controller.selectedIndex == index
-              ? Colors.blueAccent.withOpacity(0.5)
+              ? const Color(0xff04395e)
               : Colors.transparent,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
             child: Text(
               widget.controller.suggestions[index],
               overflow: TextOverflow.ellipsis,
